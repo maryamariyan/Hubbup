@@ -1,0 +1,47 @@
+
+=============== Inferring columns in dataset ===============
+############################################################
+Inferred dataset columns --
+  -----------------------------------
+ | Name        | Data Type | Purpose |
+ |-----------------------------------|
+ | Area        | String    | Label   |
+ | ID          | Single    | Numeric |
+ | Description | String    | Text    |
+ | Title       | String    | Ignored |
+  -----------------------------------
+
+
+
+=============== Running AutoML experiment ===============
+#########################################################
+Running AutoML multiclass classification experiment for 900 seconds...
+|     Trainer                              MicroAccuracy  MacroAccuracy  Duration                                |
+|1    SdcaMaximumEntropyMulti                     0.8667         0.8297     218.1                                |
+
+
+num models created: 1
+Top models ranked by accuracy --
+|     Trainer                              MicroAccuracy  MacroAccuracy  Duration                                |
+|1    SdcaMaximumEntropyMulti                     0.8667         0.8297     218.1                                |
+
+===== Evaluating model's accuracy with test data =====
+######################################################
+************************************************************
+*    Metrics for SdcaMaximumEntropyMulti multi-class classification model
+*-----------------------------------------------------------
+    MacroAccuracy = 0.9981, a value between 0 and 1, the closer to 1, the better
+    MicroAccuracy = 0.9956, a value between 0 and 1, the closer to 1, the better
+    LogLoss = 0.0259, the closer to 0, the better
+    LogLoss for class 1 = 0.0152, the closer to 0, the better
+    LogLoss for class 2 = 0.0139, the closer to 0, the better
+    LogLoss for class 3 = 0.1161, the closer to 0, the better
+************************************************************
+
+
+=============== Saving the model ===============
+################################################
+
+C:\Program Files\dotnet\dotnet.exe (process 41692) exited with code -1.
+To automatically close the console when debugging stops, enable Tools->Options->Debugging->Automatically close the console when debugging stops.
+Press any key to close this window . . .

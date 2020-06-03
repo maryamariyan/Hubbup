@@ -24,13 +24,14 @@ namespace CreateMikLabelModel
             foreach (var repo in Repos)
             {
                 var tsvRawGitHubDataPath = $"{repo.owner}-{repo.repo}-issueData.tsv";
+                var tsvRawTestGitHubDataPath = $"{repo.owner}-{repo.repo}-issueTestData.tsv";
                 var modelOutputDataPath = $"{repo.owner}-{repo.repo}-GitHubLabelerModel.zip";
 
-                await GetGitHubIssueData(repo.owner, repo.repo, outputPath: tsvRawGitHubDataPath);
+                await GetGitHubIssueData(repo.owner, repo.repo, outputPath: tsvRawGitHubDataPath, tsvRawTestGitHubDataPath);
 
                 //This line re-trains the ML Model
                 MLHelper.BuildAndTrainModel(
-                    tsvRawGitHubDataPath,
+                    tsvRawGitHubDataPath, tsvRawTestGitHubDataPath,
                     modelOutputDataPath,
                     MyTrainerStrategy.OVAAveragedPerceptronTrainer);
 
@@ -41,7 +42,7 @@ namespace CreateMikLabelModel
             Console.WriteLine($"Please remember to copy the ZIP files to the web site's ML folder");
         }
 
-        private static async Task GetGitHubIssueData(string owner, string repo, string outputPath)
+        private static async Task GetGitHubIssueData(string owner, string repo, string outputPath, string testPath)
         {
             Console.WriteLine($"Getting all issues for {owner}/{repo}...");
 
@@ -76,13 +77,25 @@ namespace CreateMikLabelModel
             using (var outputWriter = new StreamWriter(outputPath))
             {
                 outputWriter.WriteLine("ID\tArea\tTitle\tDescription");
-                foreach (var issue in issuesOfInterest)
+                foreach (var issue in issuesOfInterest.TakeLast(5 * issuesOfInterest.Count / 6))
                 {
                     var area = issue.Labels.First(l => l.Name.StartsWith("area-", StringComparison.OrdinalIgnoreCase)).Name;
                     var body = issue.Body.Replace('\r', ' ').Replace('\n', ' ').Replace('\t', ' ');
                     outputWriter.WriteLine($"{issue.Number}\t{area}\t{issue.Title}\t{body}");
                 }
             }
+
+
+            //using (var outputWriter = new StreamWriter(testPath))
+            //{
+            //    outputWriter.WriteLine("ID\tArea\tTitle\tDescription");
+            //    foreach (var issue in issuesOfInterest.Skip(5 * issuesOfInterest.Count / 6))
+            //    {
+            //        var area = issue.Labels.First(l => l.Name.StartsWith("area-", StringComparison.OrdinalIgnoreCase)).Name;
+            //        var body = issue.Body.Replace('\r', ' ').Replace('\n', ' ').Replace('\t', ' ');
+            //        outputWriter.WriteLine($"{issue.Number}\t{area}\t{issue.Title}\t{body}");
+            //    }
+            //}
 
             stopWatch.Stop();
             Console.WriteLine($"Done writing TSV in {stopWatch.ElapsedMilliseconds}ms");
